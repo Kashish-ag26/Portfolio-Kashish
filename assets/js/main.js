@@ -131,6 +131,29 @@
     $(".body-overlay").removeClass("opened");
   });
 
+  // Smooth scroll for in-page anchors and auto-close offcanvas menu
+  $(document).on("click", 'a[href^="#"]', function (e) {
+    let targetId = $(this).attr("href");
+    if (targetId && targetId !== "#" && targetId !== "javascript:void(0);") {
+      let $target = $(targetId);
+      if ($target.length) {
+        e.preventDefault();
+        // Close offcanvas menu overlay
+        $(".tw-offcanvas-2-area").removeClass("opened");
+        $(".body-overlay").removeClass("opened");
+        $(".tw-text-hover-effect-word").removeClass("animated-text");
+
+        // Smooth scroll to target section
+        $("html, body").animate(
+          {
+            scrollTop: $target.offset().top - 40,
+          },
+          800
+        );
+      }
+    }
+  });
+
   ////////////////////////////////////////////////////
   // 06. Sidebar Js
   $(".tw-menu-bar").on("click", function () {
