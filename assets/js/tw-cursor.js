@@ -50,6 +50,7 @@ if ($("body").not(".is-mobile").hasClass("tw-magic-cursor")) {
   // Hide on hover//
   $("a, button, .tw-cart-minus, .tw-cart-plus") // class "hide-cursor" is for global use.
     .not(".cursor-hide") // omit from selection.
+    .not("[data-cursor] a, [data-cursor] button, [data-cursor] *")
     .on("mouseenter", function () {
       gsap.to($ball, { duration: 0.3, scale: 0, opacity: 0 });
     })
