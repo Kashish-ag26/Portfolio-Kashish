@@ -88,14 +88,40 @@ if ($("body").not(".is-mobile").hasClass("tw-magic-cursor")) {
     gsap.to("#magic-cursor", { duration: 0.3, autoAlpha: 1 });
   });
 
+  function resetCursorBall() {
+    if ($("#ball").hasClass("with-blur") || $ball.find(".ball-view").length) {
+      $("#ball").removeClass("with-blur");
+      gsap.to($ball, {
+        duration: 0.3,
+        yPercent: -50,
+        width: $ballWidth,
+        height: $ballHeight,
+        opacity: $ballOpacity,
+        borderWidth: $ballBorderWidth,
+        backgroundColor: "#1c1d21",
+        backdropFilter: "none",
+        boxShadow: "none",
+      });
+      gsap.to(".ball-view", {
+        duration: 0.3,
+        scale: 0,
+        autoAlpha: 0,
+        clearProps: "all",
+      });
+      $ball.find(".ball-view").remove();
+    }
+  }
+
   // Cursor view on hover (data attribute "data-cursor="...").
   $("[data-cursor]").each(function () {
     $(this)
       .on("mouseenter", function () {
         $("#ball").addClass("with-blur");
-        $ball.append('<div class="ball-view"></div>');
-        $(".ball-view").append($(this).attr("data-cursor"));
-        gsap.to(ball, {
+        if (!$ball.find(".ball-view").length) {
+          $ball.append('<div class="ball-view"></div>');
+        }
+        $ball.find(".ball-view").html($(this).attr("data-cursor"));
+        gsap.to($ball, {
           duration: 0.3,
           yPercent: -75,
           width: 140,
@@ -110,23 +136,19 @@ if ($("body").not(".is-mobile").hasClass("tw-magic-cursor")) {
         gsap.to(".ball-view", { duration: 0.3, scale: 1, autoAlpha: 1 });
       })
       .on("mouseleave", function () {
-        gsap.to(ball, {
-          duration: 0.3,
-          yPercent: -50,
-          width: $ballWidth,
-          height: $ballHeight,
-          opacity: $ballOpacity,
-          borderWidth: $ballBorderWidth,
-          backgroundColor: "#1c1d21",
-        });
-        gsap.to(".ball-view", {
-          duration: 0.3,
-          scale: 0,
-          autoAlpha: 0,
-          clearProps: "all",
-        });
-        $ball.find(".ball-view").remove();
+        resetCursorBall();
       });
     $(this).addClass("not-hide-cursor");
+  });
+
+  // Safety checks: reset cursor ball on scroll or when moving mouse outside data-cursor elements
+  $(window).on("scroll", function () {
+    resetCursorBall();
+  });
+
+  $(document).on("mousemove", function (e) {
+    if ($(e.target).closest("[data-cursor]").length === 0) {
+      resetCursorBall();
+    }
   });
 }
